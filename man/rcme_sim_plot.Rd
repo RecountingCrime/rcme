@@ -21,11 +21,10 @@ ex <- rcme_out(
   formula = "damage_crime ~ collective_efficacy + unemployment +
   white_british + median_age",
   data = crime_damage,
-  key_predictor = "collective_efficacy",
-  S = c(0.29, 0.85, 1.0),
-  R_sd = c(0.08, 0.10, 0.12),
-  D = c(-0.3, -0.2, -0.1, 0),
-  log_var = T)
+  focal_variable = "collective_efficacy",
+  R = c(0.29, 0.85, 0.9),
+  D = c(0.9, 1, 1.1),
+  log_var = TRUE)
 
 rcme_sim_plot(ex)
 }

@@ -4,9 +4,8 @@
 #' @param data
 #' @param outcome
 #' @param predictors
-#' @param S
-#' @param key_predictor
-#' @param R_sd
+#' @param R
+#' @param focal_variable
 #' @param D
 #' @param log_var
 #'
@@ -17,60 +16,45 @@
 rcme_sim_ind <- function(data,
                     outcome,
                     predictors,
-                    S,
-                    key_predictor,
-                    R_sd,
+                    R,
+                    focal_variable,
                     D,
                     log_var){
 
-  lapply(0:1000, function(x){
-
-    data$random_error <- rnorm(nrow(data), 0, R_sd)
-
-    if (D != 0) {
-      data$error_hat <- S + data$random_error * (1 - abs(D)) +
-        (D * R_sd) / sd(data[[outcome]], na.rm = T) * data[[outcome]]
-    } else {
-      data$error_hat <- S + data$random_error
-    }
 
 
-    # Adding random error by setting its range of parameters
-    #  equal to that of the R_sd of under reporting
+  log_odds <- log((D * R - D)/(D * R - 1))
+  log_odds <- ifelse(is.infinite(log_odds), 0, log_odds)
+
+  if (R != 1) {
+    data$error_hat <- exp(log(R / (1 - R)) +
+                            log_odds * data[[outcome]]) /
+      (1 + exp(log(R / (1 - R)) +
+                 log_odds * data[[outcome]]))
+  } else {
+    data$error_hat <- exp(0 + log_odds * data[[outcome]]) /
+      (1 + 0 + log_odds * data[[outcome]])
+  }
 
 
-    data$error_hat <- ifelse(data$error_hat < 0,
-                                0.001,
-                                ifelse(data$error_hat > 1,
-                                       1,
-                                       data$error_hat))
 
-    data$adjusted <- data[[key_predictor]] / data$error_hat
+  data$adjusted <- data[[focal_variable]] / data$error_hat
 
-    if (log_var == FALSE) {
-	 if (length(predictors[!predictors %in% key_predictor]) > 0) {
-        reg_syntax <- paste0(outcome, " ~ adjusted + ",
-                             paste0(predictors[!predictors %in% key_predictor],
-                                    collapse = " + "))
-      } else {
-        reg_syntax <- paste0(outcome, " ~ adjusted")
-      }
-    } else {
-      if (length(predictors[!predictors %in% key_predictor]) > 0) {
-        reg_syntax <- paste0(outcome, " ~ log(adjusted) + ",
-                             paste0(predictors[!predictors %in% key_predictor],
-                                    collapse = " + "))
-      } else {
-        reg_syntax <- paste0(outcome, " ~ log(adjusted)")
-      }
-    }
+  if (log_var == FALSE) {
+    reg_syntax <- paste0(outcome, " ~ adjusted + ",
+                         paste0(predictors[!predictors %in% focal_variable],
+                                collapse = " + "))
+  } else {
+    reg_syntax <- paste0(outcome, " ~ log(adjusted) + ",
+                         paste0(predictors[!predictors %in% focal_variable],
+                                collapse = " + "))
+  }
 
 
-    lm(reg_syntax, data = data) %>%
-      summary() %>%
-      coef() %>%
-      .[stringr::str_detect(rownames(.), "adjusted"), c("Estimate", "Std. Error")]
-  })
+  lm(reg_syntax, data = data) %>%
+    summary() %>%
+    coef() %>%
+    .[stringr::str_detect(rownames(.), "adjusted"), c("Estimate", "Std. Error")]
 
 
 }

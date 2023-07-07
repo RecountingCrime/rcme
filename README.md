@@ -21,34 +21,32 @@ You can install the development version of rcme from
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("alex-cernat/rcme")
+devtools::install_github("RecountingCrime/rcme")
 ```
 
 ## Example
 
 This is a basic example which shows how to get a corrected regression
 estimate when we assume measurement error on the independent variable
-with a recordig rate (`S`) of 0.31, a standard deviation (`R_sd`) of
-0.12 and a correlation between the variable of interest and measurement
-error (`D`) of -0.1.
+with a recording rate (`R`) of 0.3, and an association between the focal
+variable and the recording rate (`D`) of 0.9 risk ratios.
 
 ``` r
 rcme_ind(
   formula = "disorder ~ log_violent_crime + white_british + unemployment + median_age",
   data = crime_disorder,
-  key_predictor = "log_violent_crime",
-  S = 0.31,
-  R_sd = 0.12,
-  D = -0.1) 
+  focal_variable = "log_violent_crime",
+  R = 0.3,
+  D = 0.9) 
 #> $sim_result
-#>   key_predictor    SE
-#> 1         0.006 0.004
+#>          focal_variable    SE
+#> Estimate          0.365 0.029
 #> 
 #> $naive
 #> 
 #> Call:
-#> lm(formula = paste0(outcome, " ~ ", paste0(c(paste0(key_predictor, 
-#>     collapse = ""), predictors[!predictors %in% key_predictor]), 
+#> lm(formula = paste0(outcome, " ~ ", paste0(c(paste0(focal_variable, 
+#>     collapse = ""), predictors[!predictors %in% focal_variable]), 
 #>     collapse = " + ")), data = data)
 #> 
 #> Coefficients:
@@ -58,44 +56,46 @@ rcme_ind(
 #>          -0.17004  
 #> 
 #> 
-#> $key_predictor
+#> $focal_variable
 #> [1] "log_violent_crime"
 ```
 
 It is possible to run the function over multiple scenarios as well as
-enable the function to log the variable of interest:
+enable the function to log the focal variable:
 
 ``` r
 rcme_ind(
   formula = "disorder ~ violent_crime + white_british + unemployment + median_age",
   data = crime_disorder,
-  key_predictor = "violent_crime",
-  S = c(0.31, 0.67, 1.0),
-  R_sd = c(0.08, 0.10, 0.12),
+  focal_variable = "violent_crime",
+  R = c(0.3, 0.6, 0.9),
+  D = c(0.9, 0.95, 1, 1.05, 1.1),
   log_var = T) 
 #> Warning in rcme_ind(formula = "disorder ~ violent_crime + white_british + unemployment + median_age", : You have specified log_var = TRUE.
 #> The crime variable will be logged to reflect the multiplicative error structure. If you wish to report the sensitivity results in the original crime metric they will need to be transformed. For a full discussion of the multiplicative error structure of crime see Pina-Sanchez et al., 2022.
-#> Warning in rcme_ind(formula = "disorder ~ violent_crime + white_british +
-#> unemployment + median_age", : The correlation between measurement error in
-#> crime data and the key variable of interest is set to 0. Non-differentiality is
-#> assumed.
 #> $sim_result
-#>      S R_sd D log_var key_predictor    SE
-#> 1 0.31 0.08 0    TRUE         0.240 0.121
-#> 2 0.67 0.08 0    TRUE         0.355 0.147
-#> 3 1.00 0.08 0    TRUE         0.390 0.154
-#> 4 0.31 0.10 0    TRUE         0.167 0.101
-#> 5 0.67 0.10 0    TRUE         0.336 0.143
-#> 6 1.00 0.10 0    TRUE         0.386 0.153
-#> 7 0.31 0.12 0    TRUE         0.106 0.078
-#> 8 0.67 0.12 0    TRUE         0.310 0.138
-#> 9 1.00 0.12 0    TRUE         0.379 0.152
+#>      R    D log_var focal_variable    SE
+#> 1  0.3 0.90    TRUE          0.892 0.136
+#> 2  0.6 0.90    TRUE          0.871 0.137
+#> 3  0.9 0.90    TRUE          0.819 0.139
+#> 4  0.3 0.95    TRUE          0.669 0.147
+#> 5  0.6 0.95    TRUE          0.661 0.147
+#> 6  0.9 0.95    TRUE          0.634 0.149
+#> 7  0.3 1.00    TRUE          0.398 0.155
+#> 8  0.6 1.00    TRUE          0.398 0.155
+#> 9  0.9 1.00    TRUE          0.398 0.155
+#> 10 0.3 1.05    TRUE          0.101 0.159
+#> 11 0.6 1.05    TRUE          0.090 0.159
+#> 12 0.9 1.05    TRUE         -0.085 0.158
+#> 13 0.3 1.10    TRUE         -0.199 0.159
+#> 14 0.6 1.10    TRUE         -0.244 0.158
+#> 15 0.9 1.10    TRUE         -0.683 0.056
 #> 
 #> $naive
 #> 
 #> Call:
-#> lm(formula = paste0(outcome, " ~ ", paste0(c(paste0("log(", key_predictor, 
-#>     ")", collapse = ""), predictors[!predictors %in% key_predictor]), 
+#> lm(formula = paste0(outcome, " ~ ", paste0(c(paste0("log(", focal_variable, 
+#>     ")", collapse = ""), predictors[!predictors %in% focal_variable]), 
 #>     collapse = " + ")), data = data)
 #> 
 #> Coefficients:
@@ -105,7 +105,7 @@ rcme_ind(
 #>           -0.17004  
 #> 
 #> 
-#> $key_predictor
+#> $focal_variable
 #> [1] "violent_crime"
 ```
 
@@ -116,13 +116,10 @@ function:
 rcme_out_ex <- rcme_out(
   formula = "damage_crime ~ collective_efficacy + unemployment + white_british + median_age",
   data = crime_damage,
-  key_predictor = "collective_efficacy",
-  S = c(0.29, 0.85, 1.0),
-  R_sd = c(0.08, 0.10, 0.12),
-  D = c(-0.3, -0.2, -0.1, 0),
-  log_var = T)
-#> Warning in rcme_out(formula = "damage_crime ~ collective_efficacy + unemployment + white_british + median_age", : You have specified log_var = TRUE.
-#> The crime variable will be logged to reflect the multiplicative error structure. If you wish to report the sensitivity results in the original crime metric they will need to be transformed. For a full discussion of the multiplicative error structure of crime see Pina-Sanchez et al., 2022.
+  focal_variable = "collective_efficacy",
+  R = c(0.25, 0.35, 0.45),
+  D = c(0.9, 0.95, 1, 1.05, 1.10),
+  log_var = F)
 ```
 
 You can also visualize the results of the simulations easily using

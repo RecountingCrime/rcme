@@ -4,10 +4,9 @@
 #'
 #' @param formula Regression formula of interest
 #' @param data Data that will be used
-#' @param key_predictor The key independent variable of interest in the model. Only one variable can be used.
-#' @param S The magnitude of the systematic error component, included as a scalar contained within the (0,1). Users can input multiple values using c().
-#' @param R_sd The magnitude of the random errors, included as a value of the standard deviation, assumed to be normally distributed with a mean of zero. Users can input multiple values using c().
-#' @param D The magnitude of the correlation between the measurement error and the key variable of interest. Users can input multiple values using c().
+#' @param focal_variable The key independent variable of interest in the model. Only one variable can be used.
+#' @param R The magnitude of the systematic error component, included as a scalar contained within the (0,1). Users can input multiple values using c().
+#' @param D The magnitude of the association between the measurement error and the key variable of interest measured as relative risk. Users can input multiple values using c().
 #' @param log_var Do you want the function to log the outcome? If log_var = TRUE users must remember that all sensitivity results will be presented on the log scale.
 #'
 #' @return
@@ -18,18 +17,16 @@
 #'   formula = "damage_crime ~ collective_efficacy + unemployment +
 #'   white_british + median_age",
 #'   data = crime_damage,
-#'   key_predictor = "collective_efficacy",
-#'   S = 0.29,
-#'   R_sd = 0.12,
-#'   D = -0.3,
+#'   focal_variable = "collective_efficacy",
+#'   R = 0.29,
+#'   D = 0.9,
 #'   log_var = TRUE)
 rcme_out <- function(formula,
-                      data,
-                      key_predictor, # main predictor of interest
-                      S = 1, # reporting rate
-                      R_sd = 0, # standard deviation to use
-                      D = 0, # correlation
-                      log_var = FALSE # should we log the variable
+                     data,
+                     focal_variable, # main predictor of interest
+                     R = 1, # reporting rate
+                     D = 0, # correlation
+                     log_var = FALSE # should we log the variable
                       ) {
 
 
@@ -39,23 +36,20 @@ rcme_out <- function(formula,
   if (!is.data.frame(data)) {
     stop("`data` must be a data")
   }
-  if (!is.numeric(S)) {
-    stop("`S` must be numeric and of length 1")
+  if (!is.numeric(R)) {
+    stop("`R` must be numeric")
   }
-  if (sum(S < 0, S > 1) > 0) {
-    stop("`S` must be between 0 and 1")
-  }
-  if (!is.numeric(R_sd)) {
-    stop("`R_sd` must be numeric and of length 1")
-  }
+  # if (sum(S < 0, S > 1) > 0) {
+  #   stop("`S` must be between 0 and 1")
+  # }
   if (!is.numeric(D)) {
-    stop("`D` must be numeric and of length 1")
+    stop("`D` must be numeric")
   }
-  if (sum(D < -1, D > 1) > 0) {
-    stop("`D` must be between -1 and 1")
-  }
-  if (length(key_predictor) != 1 | !is.character(key_predictor)) {
-    stop("`key_predictor` must be character and of length 1")
+  # if (sum(D < -1, D > 1) > 0) {
+  #   stop("`D` must be between -1 and 1")
+  # }
+  if (length(focal_variable) != 1 | !is.character(focal_variable)) {
+    stop("`focal_variable` must be character and of length 1")
   }
   if (is.logical(log_var) == FALSE) {
     stop("`log_var` must be logical type")
@@ -65,11 +59,11 @@ rcme_out <- function(formula,
       warning("You have specified log_var = TRUE.\nThe crime variable will be logged to reflect the multiplicative error structure. If you wish to report the sensitivity results in the original crime metric they will need to be transformed. For a full discussion of the multiplicative error structure of crime see Pina-Sanchez et al., 2022.")
     }
   }
-  if (length(D) == 1) {
-    if (D == 0) {
-      warning("The correlation between measurement error in crime data and the key variable of interest is set to 0. Non-differentiality is assumed.")
-    }
-  }
+  # if (length(D) == 1) {
+  #   if (D == 0) {
+  #     warning("The correlation between measurement error in crime data and the key variable of interest is set to 0. Non-differentiality is assumed.")
+  #   }
+  # }
 
 # parse inputs ------------------------------------------------------------
 
@@ -110,72 +104,59 @@ rcme_out <- function(formula,
 # run simulation ----------------------------------------------------------
 
   # if only one set of inputs run function just once. If more run multiple times
-  if (length(S) + length(R_sd) +
-      length(D) + length(log_var) == 4) {
+  if (length(R) +
+      length(D) + length(log_var) == 3) {
 
     # run sim_out function once with inputs from above
     sim_res <- rcme_sim_out(data,
-                            outcome,
-                            predictors,
-                            S,
-                            key_predictor,
-                            R_sd,
-                            D,
-                            log_var)
+                       outcome,
+                       predictors,
+                       R,
+                       focal_variable,
+                       D,
+                       log_var)
 
-    # extract inputs from simulation
-    slope <- purrr::map(sim_res, function(x) x["Estimate"]) %>%
-      unlist() %>%
-      mean()
-    SE <- purrr::map(sim_res, function(x) x["Std. Error"]) %>%
-      unlist() %>%
-      mean()
+    # extract outputs from simulation
+    slope <- sim_res[1]
+    SE <- sim_res[2]
 
     # save simple results for printing
-    sim_result <- data.frame(key_predictor = round(slope, 3),
+    sim_result <- data.frame(focal_variable = round(slope, 3),
                              SE = round(SE, 3))
 
   } else {
 
     # create all possible combination of inputs to loop over
-    args <- expand.grid(S = S,
-                        R_sd = R_sd,
+    args <- expand.grid(R = R,
                         D = D,
                         log_var = log_var)
 
     # loop function over all combination of inputs
     res <- purrr::pmap(args,
-                       rcme_sim_out,
-                       data = data,
-                       predictors = predictors,
-                       outcome = outcome,
-                       key_predictor = key_predictor)
+                rcme_sim_out,
+                data = data,
+                predictors = predictors,
+                outcome = outcome,
+                focal_variable = focal_variable)
 
     # extract inputs from simulation
-    slope <- purrr::map_dbl(res, function(x) {
-      purrr::map(x, function(y) y["Estimate"]) %>%
-        unlist() %>%
-        mean()
-    })
-    SE <- purrr::map_dbl(res, function(x) {
-      purrr::map(x, function(y) y["Std. Error"]) %>%
-        unlist() %>%
-        mean()
-    })
+    # extract inputs from simulation
+    slope <- purrr::map(res, function(x) x[1]) %>% unlist()
+    SE <- purrr::map(res, function(x) x[2]) %>% unlist()
 
     # save simple results for printing
     sim_result <- cbind(args,
-                        key_predictor = round(slope, 3),
+                        focal_variable = round(slope, 3),
                         SE = round(SE, 3))
   }
 
 
-# save result -------------------------------------------------------------
+  # save result -------------------------------------------------------------
 
   # make list object to print
   out <- list(sim_result = sim_result,
               naive = lm_naive,
-              key_predictor = key_predictor)
+              focal_variable = focal_variable)
 
   # print result
   out

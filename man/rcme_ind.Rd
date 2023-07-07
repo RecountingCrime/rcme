@@ -4,20 +4,18 @@
 \alias{rcme_ind}
 \title{Function that simulates the effect of measurement error on an independent variable.}
 \usage{
-rcme_ind(formula, data, key_predictor, S = 1, R_sd = 0, D = 0, log_var = FALSE)
+rcme_ind(formula, data, focal_variable, R = 0, D = 1, log_var = FALSE)
 }
 \arguments{
 \item{formula}{Regression formula of interest}
 
 \item{data}{Data that will be used}
 
-\item{key_predictor}{The key independent variable of interest in the model. Only one variable can be used.}
+\item{focal_variable}{The key independent variable of interest in the model. Only one variable can be used.}
 
-\item{S}{The magnitude of the systematic error component, included as a scalar contained within the (0,1). Users can input multiple values using c().}
+\item{R}{The magnitude of the systematic error component, included as a scalar contained within the (0,1). Users can input multiple values using c().}
 
-\item{R_sd}{The magnitude of the random errors, included as a value of the standard deviation, assumed to be normally distributed with a mean of zero. Users can input multiple values using c().}
-
-\item{D}{The magnitude of the correlation between the measurement error and the key variable of interest. Users can input multiple values using c().}
+\item{D}{The magnitude of the association between the measurement error and the key variable of interest measured as risk ratios. Users can input multiple values using c().}
 
 \item{log_var}{Do you want the function to log the outcome? If log_var = TRUE users must remember that all sensitivity results will be presented on the log scale.}
 }
@@ -28,8 +26,7 @@ Function that simulates the effect of measurement error on an independent variab
 rcme_ind(
   formula = "disorder ~ log_violent_crime + white_british + unemployment + median_age",
   data = crime_disorder,
-  key_predictor = "log_violent_crime",
-  S = 0.31,
-  R_sd = 0.12,
-  D = -0.1)
+  focal_variable = "log_violent_crime",
+  R = 0.31,
+  D = 0.9)
 }

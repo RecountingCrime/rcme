@@ -30,31 +30,31 @@ You can install the development version of rcme from [GitHub](https://github.com
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("alex-cernat/rcme")
+devtools::install_github("RecountingCrime/rcme")
 ```
 
 ## Example
 
-This is a basic example which shows how to get a corrected regression estimate when we assume measurement error on the independent variable with a recordig rate (`S`) of 0.31, a standard deviation (`R_sd`) of 0.12 and a correlation between the variable of interest and measurement error (`D`) of -0.1.  
+
+This is a basic example which shows how to get a corrected regression estimate when we assume measurement error on the independent variable with a recording rate (`R`) of 0.3, and an association between the focal variable and the recording rate (`D`) of 0.9 risk ratios.  
 ```{r example}
 rcme_ind(
   formula = "disorder ~ log_violent_crime + white_british + unemployment + median_age",
   data = crime_disorder,
-  key_predictor = "log_violent_crime",
-  S = 0.31,
-  R_sd = 0.12,
-  D = -0.1) 
+  focal_variable = "log_violent_crime",
+  R = 0.3,
+  D = 0.9) 
 ```
 
-It is possible to run the function over multiple scenarios as well as enable the function to log the variable of interest:
+It is possible to run the function over multiple scenarios as well as enable the function to log the focal variable:
 
 ```{r}
 rcme_ind(
   formula = "disorder ~ violent_crime + white_british + unemployment + median_age",
   data = crime_disorder,
-  key_predictor = "violent_crime",
-  S = c(0.31, 0.67, 1.0),
-  R_sd = c(0.08, 0.10, 0.12),
+  focal_variable = "violent_crime",
+  R = c(0.3, 0.6, 0.9),
+  D = c(0.9, 0.95, 1, 1.05, 1.1),
   log_var = T) 
 
 ```
@@ -65,11 +65,10 @@ When measurement error is on the outcome you can use the `rcme_out()` function:
 rcme_out_ex <- rcme_out(
   formula = "damage_crime ~ collective_efficacy + unemployment + white_british + median_age",
   data = crime_damage,
-  key_predictor = "collective_efficacy",
-  S = c(0.29, 0.85, 1.0),
-  R_sd = c(0.08, 0.10, 0.12),
-  D = c(-0.3, -0.2, -0.1, 0),
-  log_var = T)
+  focal_variable = "collective_efficacy",
+  R = c(0.25, 0.35, 0.45),
+  D = c(0.9, 0.95, 1, 1.05, 1.10),
+  log_var = F)
 
 ```
 

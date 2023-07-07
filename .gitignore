@@ -4,3 +4,4 @@
 .httr-oauth
 .DS_Store
 ./R/package_setup.R
+.quarto

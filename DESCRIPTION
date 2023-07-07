@@ -15,7 +15,7 @@ Description: The package helps run simulations to estimate the impact of measure
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.3
 Imports: 
     dplyr,
     ggplot2,
@@ -28,3 +28,6 @@ Depends:
 LazyData: true
 URL: https://github.com/alex-cernat/rcme
 BugReports: https://github.com/alex-cernat/rcme/issues
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

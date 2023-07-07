@@ -12,11 +12,10 @@
 #'   formula = "damage_crime ~ collective_efficacy + unemployment +
 #'   white_british + median_age",
 #'   data = crime_damage,
-#'   key_predictor = "collective_efficacy",
-#'   S = c(0.29, 0.85, 1.0),
-#'   R_sd = c(0.08, 0.10, 0.12),
-#'   D = c(-0.3, -0.2, -0.1, 0),
-#'   log_var = T)
+#'   focal_variable = "collective_efficacy",
+#'   R = c(0.29, 0.85, 0.9),
+#'   D = c(0.9, 1, 1.1),
+#'   log_var = TRUE)
 #'
 #' rcme_sim_plot(ex)
 rcme_sim_plot <- function(rcme_sim_range_object,
@@ -24,26 +23,19 @@ rcme_sim_plot <- function(rcme_sim_range_object,
                           naive = TRUE) {
 
   # make plot
-  plot_data <- rcme_sim_range_object$sim_result %>%
-    dplyr::mutate(lci = key_predictor - (1.96 * SE),
-           uci = key_predictor + (1.96 * SE))
-
-  plot <- plot_data %>%
-    ggplot2::ggplot(ggplot2::aes(D, key_predictor, fill = as.factor(R_sd))) +
-    ggplot2::geom_line(ggplot2::aes(color = as.factor(R_sd),
-                  linetype = as.factor(R_sd)), size = 0.7) +
-    ggplot2::facet_wrap( ~ S) +
+  plot <- rcme_sim_range_object$sim_result %>%
+    dplyr::mutate(lci = focal_variable - (1.96 * SE),
+           uci = focal_variable + (1.96 * SE)) %>%
+    ggplot2::ggplot(ggplot2::aes(D, focal_variable)) +
+    ggplot2::geom_line(ggplot2::aes(color = "Adjusted")) +
+    ggplot2::facet_wrap( ~ R) +
     ggplot2::theme_bw() +
     ggplot2::labs(
-      x = "Correlation between key predictor and S",
-      y = "Effect of key predictor on outcome",
-      color = "Std. dev. random error",
-      fill = "Std. dev. random error",
-      linetype = "Std. dev. random error"
+      x = "Risk ratio",
+      y = "Effect of focal variable",
+      color = ""
     ) +
-    ggplot2::scale_color_brewer(palette = "PuBu") +
-    ggplot2::scale_fill_brewer(palette = "PuBu")
-
+    ggplot2::scale_color_manual(values = "black")
 
   if (ci == T) {
     plot <- plot +
@@ -56,28 +48,22 @@ rcme_sim_plot <- function(rcme_sim_range_object,
   if (naive == T) {
 
     naive_coefs <- rcme_sim_range_object$naive$coefficients
-    names(naive_coefs) <- stringr::str_remove_all(names(naive_coefs),
-                                                  "log|\\(|\\)")
+    names(naive_coefs) <- stringr::str_remove_all(names(naive_coefs), "log|\\(|\\)")
 
-    naive_est <- naive_coefs[rcme_sim_range_object$key_predictor]
-
-    naive_est_data <- data.frame(naive_est, R_sd = min(plot_data$R_sd))
+    naive_est <- naive_coefs[rcme_sim_range_object$focal_variable]
 
     plot <- plot +
       ggplot2::geom_point(ggplot2::aes(
-        x = 0,
-        y = naive_est
-      ),
-      size = 3,
-      alpha = 0.4) +
-      ggrepel::geom_text_repel(data = naive_est_data,
-                               ggplot2::aes(x = 0,
-                                            y = naive_est,
-                                            label = "Naive"),
-                               box.padding = ggplot2::unit(0.35, "lines"),
-                               point.padding = ggplot2::unit(0.3, "lines"),
-                               alpha = 0.4) +
-      ggplot2::guides(fill = ggplot2::guide_legend(override.aes = list(shape = NA)))
+        x = 1,
+        y = naive_est,
+        shape = "Naive"
+      ), size = 3) +
+      ggplot2::guides(
+        shape = ggplot2::guide_legend(order = 2),
+        color = ggplot2::guide_legend(order = 1),
+        fill = ggplot2::guide_legend(order = 1)
+      ) +
+      ggplot2::labs(shape = "")
 
   }
 

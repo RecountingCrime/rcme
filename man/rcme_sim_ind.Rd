@@ -4,7 +4,7 @@
 \alias{rcme_sim_ind}
 \title{Plotting graphs for}
 \usage{
-rcme_sim_ind(data, outcome, predictors, S, key_predictor, R_sd, D, log_var)
+rcme_sim_ind(data, outcome, predictors, R, focal_variable, D, log_var)
 }
 \arguments{
 \item{log_var}{}

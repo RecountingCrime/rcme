@@ -4,7 +4,7 @@
 \alias{rcme_sim_out}
 \title{Title}
 \usage{
-rcme_sim_out(data, outcome, predictors, S, key_predictor, R_sd, D, log_var)
+rcme_sim_out(data, outcome, predictors, R, focal_variable, D, log_var)
 }
 \arguments{
 \item{log_var}{}
