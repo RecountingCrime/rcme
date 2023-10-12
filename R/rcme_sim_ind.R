@@ -22,48 +22,23 @@ rcme_sim_ind <- function(data,
                     log_var){
 
 
-  odds <- (D * (1 - R)) / (1 - (D * R))
 
+  log_odds <- log((D * R - D)/(D * R - 1))
+  log_odds <- ifelse(is.infinite(log_odds), 0, log_odds)
 
-  if (odds <= 0 | is.infinite(odds) | is.na(odds) | is.nan(odds)) {
-    stop(
-      str_c("The combination of D = ",
-            D,
-            " and R = ",
-            R,
-            " is not valid. Please try different values.\n See for more info: https://statisticsbyjim.com/probability/relative-risk/"))
+  if (R != 1) {
+    data$error_hat <- exp(log(R / (1 - R)) +
+                            log_odds * data[[outcome]]) /
+      (1 + exp(log(R / (1 - R)) +
+                 log_odds * data[[outcome]]))
+  } else {
+    data$error_hat <- exp(0 + log_odds * data[[outcome]]) /
+      (1 + 0 + log_odds * data[[outcome]])
   }
 
-  data$error_hat <- exp(log(R / (1 - R)) + log(odds) * data[[outcome]]) /
-      (1 + exp(log(R / (1 - R)) + log(odds) * data[[outcome]]))
+
 
   data$adjusted <- data[[focal_variable]] / data$error_hat
-
-
-  # old code
-  #
-  # log_odds <- log((D * R - D)/(D * R - 1))
-  # log_odds <- ifelse(is.infinite(log_odds), 0, log_odds)
-  #
-  # if (R != 1) {
-  #   data$error_hat <- exp(log(R / (1 - R)) +
-  #                           log_odds * data[[outcome]]) /
-  #     (1 + exp(log(R / (1 - R)) +
-  #                log_odds * data[[outcome]]))
-  # } else {
-  #   data$error_hat <- exp(0 + log_odds * data[[outcome]]) /
-  #     (1 + 0 + log_odds * data[[outcome]])
-  # }
-  #
-  #
-  #
-  # data$adjusted <- data[[focal_variable]] / data$error_hat
-
-
-
-
-
-
 
   if (log_var == FALSE) {
     reg_syntax <- paste0(outcome, " ~ adjusted + ",

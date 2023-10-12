@@ -22,20 +22,23 @@ rcme_sim_out <- function(data,
                     log_var
 ){
 
-  odds <- (D * (1 - R)) / (1 - (D * R))
+  # transform D to log odds and then add below instead of cor
+  log_odds <- log((D * R - D)/(D * R - 1))
+  log_odds <- ifelse(is.infinite(log_odds), 0, log_odds)
 
-  if (odds <= 0 | is.infinite(odds) | is.na(odds) | is.nan(odds)) {
-    stop(
-      str_c("The combination of D = ",
-            D,
-            " and R = ",
-            R,
-            " is not valid. Please try different values.\n See for more info: https://statisticsbyjim.com/probability/relative-risk/"))
+  # new version
+  if (R != 1) {
+    data$error_hat <- exp(log(R / (1 - R)) +
+                            log_odds * data[[focal_variable]]) /
+      (1 + exp(log(R / (1 - R)) +
+                 log_odds * data[[focal_variable]]))
+  } else {
+    data$error_hat <- exp(0 + log_odds * data[[focal_variable]]) /
+      (1 + log_odds * data[[focal_variable]])
   }
 
 
-  data$error_hat <- exp(log(R / (1 - R)) + log(odds) * data[[focal_variable]]) /
-    (1 + exp(log(R / (1 - R)) + log(odds) * data[[focal_variable]]))
+
 
   data$adjusted <- data[[outcome]] / data$error_hat
 
