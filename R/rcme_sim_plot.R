@@ -31,7 +31,7 @@ rcme_sim_plot <- function(rcme_sim_range_object,
     ggplot2::facet_wrap( ~ R) +
     ggplot2::theme_bw() +
     ggplot2::labs(
-      x = "Risk ratio",
+      x = "Odds ratio",
       y = "Effect of focal variable",
       color = ""
     ) +
