@@ -29,7 +29,7 @@ devtools::install_github("RecountingCrime/rcme")
 This is a basic example which shows how to get a corrected regression
 estimate when we assume measurement error on the independent variable
 with a recording rate (`R`) of 0.3, and an association between the focal
-variable and the recording rate (`D`) of 0.9 risk ratios.
+variable and the recording rate (`D`) of 0.9 odds ratios.
 
 ``` r
 rcme_ind(
