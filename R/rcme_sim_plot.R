@@ -3,6 +3,7 @@
 #' @param rcme_sim_range_object Object saved by `rcme_ind()` or `rcme_out()` with multiple values.
 #' @param ci include confidence interval in the graph
 #' @param naive include naive estimate in the graph
+#' @param rr show error on relative risk scale
 #'
 #' @return
 #' @export
@@ -20,22 +21,43 @@
 #' rcme_sim_plot(ex)
 rcme_sim_plot <- function(rcme_sim_range_object,
                           ci = TRUE,
-                          naive = TRUE) {
+                          naive = TRUE,
+                          rr = FALSE) {
 
-  # make plot
-  plot <- rcme_sim_range_object$sim_result %>%
-    dplyr::mutate(lci = focal_variable - (1.96 * SE),
-           uci = focal_variable + (1.96 * SE)) %>%
-    ggplot2::ggplot(ggplot2::aes(D, focal_variable)) +
-    ggplot2::geom_line(ggplot2::aes(color = "Adjusted")) +
-    ggplot2::facet_wrap( ~ R) +
-    ggplot2::theme_bw() +
-    ggplot2::labs(
-      x = "Odds ratio",
-      y = "Effect of focal variable",
-      color = ""
-    ) +
-    ggplot2::scale_color_manual(values = "black")
+  if (rr == FALSE) {
+
+    # make plot
+    plot <- rcme_sim_range_object$sim_result %>%
+      dplyr::mutate(lci = focal_variable - (1.96 * SE),
+                    uci = focal_variable + (1.96 * SE)) %>%
+      ggplot2::ggplot(ggplot2::aes(D, focal_variable)) +
+      ggplot2::geom_line(ggplot2::aes(color = "Adjusted")) +
+      ggplot2::facet_wrap( ~ R) +
+      ggplot2::theme_bw() +
+      ggplot2::labs(
+        x = "Odds ratio",
+        y = "Effect of focal variable",
+        color = ""
+      ) +
+      ggplot2::scale_color_manual(values = "black")
+
+  } else {
+
+    # make plot
+    plot <- rcme_sim_range_object$sim_result %>%
+      dplyr::mutate(lci = focal_variable - (1.96 * SE),
+                    uci = focal_variable + (1.96 * SE)) %>%
+      ggplot2::ggplot(ggplot2::aes(rr, focal_variable)) +
+      ggplot2::geom_line(ggplot2::aes(color = "Adjusted")) +
+      ggplot2::facet_wrap( ~ R) +
+      ggplot2::theme_bw() +
+      ggplot2::labs(
+        x = "Risk ratios",
+        y = "Effect of focal variable",
+        color = ""
+      ) +
+      ggplot2::scale_color_manual(values = "black")
+  }
 
   if (ci == T) {
     plot <- plot +
@@ -48,7 +70,8 @@ rcme_sim_plot <- function(rcme_sim_range_object,
   if (naive == T) {
 
     naive_coefs <- rcme_sim_range_object$naive$coefficients
-    names(naive_coefs) <- stringr::str_remove_all(names(naive_coefs), "log|\\(|\\)")
+    names(naive_coefs) <- stringr::str_remove_all(names(naive_coefs),
+                                                  "log|\\(|\\)")
 
     naive_est <- naive_coefs[rcme_sim_range_object$focal_variable]
 
