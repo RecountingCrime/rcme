@@ -119,10 +119,12 @@ rcme_out <- function(formula,
     # extract outputs from simulation
     slope <- sim_res[1]
     SE <- sim_res[2]
+    rr <- sim_res[3]
 
     # save simple results for printing
     sim_result <- data.frame(focal_variable = round(slope, 3),
-                             SE = round(SE, 3))
+                             SE = round(SE, 3),
+                             rr = round(SE, 3))
 
   } else {
 
@@ -143,9 +145,11 @@ rcme_out <- function(formula,
     # extract inputs from simulation
     slope <- purrr::map(res, function(x) x[1]) %>% unlist()
     SE <- purrr::map(res, function(x) x[2]) %>% unlist()
+    rr <- purrr::map(res, function(x) x[3]) %>% unlist()
 
     # save simple results for printing
     sim_result <- cbind(args,
+                        rr = round(rr, 3),
                         focal_variable = round(slope, 3),
                         SE = round(SE, 3))
   }

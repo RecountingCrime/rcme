@@ -52,8 +52,13 @@ rcme_sim_out <- function(data,
 
 
 
-  lm(reg_syntax, data = data) %>%
+  out <- lm(reg_syntax, data = data) %>%
     summary() %>%
     coef() %>%
     .[focal_variable, c("Estimate", "Std. Error")]
+
+  # calculate risk ratio
+  rr <-  D / (1 - R + (R * D))
+
+  c(out, "Risk Ratio of Error" = rr)
 }
