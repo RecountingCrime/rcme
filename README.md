@@ -39,8 +39,8 @@ rcme_ind(
   R = 0.3,
   D = 0.9) 
 #> $sim_result
-#>          focal_variable    SE
-#> Estimate          0.365 0.029
+#>          focal_variable    SE    rr
+#> Estimate          0.365 0.029 0.928
 #> 
 #> $naive
 #> 
@@ -74,22 +74,22 @@ rcme_ind(
 #> Warning in rcme_ind(formula = "disorder ~ violent_crime + white_british + unemployment + median_age", : You have specified log_var = TRUE.
 #> The crime variable will be logged to reflect the multiplicative error structure. If you wish to report the sensitivity results in the original crime metric they will need to be transformed. For a full discussion of the multiplicative error structure of crime see Pina-Sanchez et al., 2022.
 #> $sim_result
-#>      R    D log_var focal_variable    SE
-#> 1  0.3 0.90    TRUE          0.892 0.136
-#> 2  0.6 0.90    TRUE          0.871 0.137
-#> 3  0.9 0.90    TRUE          0.819 0.139
-#> 4  0.3 0.95    TRUE          0.669 0.147
-#> 5  0.6 0.95    TRUE          0.661 0.147
-#> 6  0.9 0.95    TRUE          0.634 0.149
-#> 7  0.3 1.00    TRUE          0.398 0.155
-#> 8  0.6 1.00    TRUE          0.398 0.155
-#> 9  0.9 1.00    TRUE          0.398 0.155
-#> 10 0.3 1.05    TRUE          0.101 0.159
-#> 11 0.6 1.05    TRUE          0.090 0.159
-#> 12 0.9 1.05    TRUE         -0.085 0.158
-#> 13 0.3 1.10    TRUE         -0.199 0.159
-#> 14 0.6 1.10    TRUE         -0.244 0.158
-#> 15 0.9 1.10    TRUE         -0.683 0.056
+#>      R    D log_var    rr focal_variable    SE
+#> 1  0.3 0.90    TRUE 0.928          0.892 0.136
+#> 2  0.6 0.90    TRUE 0.957          0.871 0.137
+#> 3  0.9 0.90    TRUE 0.989          0.819 0.139
+#> 4  0.3 0.95    TRUE 0.964          0.669 0.147
+#> 5  0.6 0.95    TRUE 0.979          0.661 0.147
+#> 6  0.9 0.95    TRUE 0.995          0.634 0.149
+#> 7  0.3 1.00    TRUE 1.000          0.398 0.155
+#> 8  0.6 1.00    TRUE 1.000          0.398 0.155
+#> 9  0.9 1.00    TRUE 1.000          0.398 0.155
+#> 10 0.3 1.05    TRUE 1.034          0.101 0.159
+#> 11 0.6 1.05    TRUE 1.019          0.090 0.159
+#> 12 0.9 1.05    TRUE 1.005         -0.085 0.158
+#> 13 0.3 1.10    TRUE 1.068         -0.199 0.159
+#> 14 0.6 1.10    TRUE 1.038         -0.244 0.158
+#> 15 0.9 1.10    TRUE 1.009         -0.683 0.056
 #> 
 #> $naive
 #> 
@@ -126,7 +126,7 @@ You can also visualize the results of the simulations easily using
 `rcme_sim_plot()`:
 
 ``` r
-rcme_sim_plot(rcme_out_ex, ci = T, naive = T)
+rcme_sim_plot(rcme_out_ex, ci = T, naive = T, rr = F)
 ```
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
