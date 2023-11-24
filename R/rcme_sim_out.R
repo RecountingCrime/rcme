@@ -24,7 +24,7 @@ rcme_sim_out <- function(data,
 
   # transform D to log odds and then add below instead of cor
   log_odds <- log((D * R - D)/(D * R - 1))
-  log_odds <- ifelse(is.infinite(log_odds), 0, log_odds)
+  log_odds <- ifelse(is.infinite(log_odds)| is.nan(log_odds), 0, log_odds)
 
   # new version
   if (R != 1) {
