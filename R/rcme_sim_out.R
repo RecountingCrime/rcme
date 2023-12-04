@@ -22,11 +22,10 @@ rcme_sim_out <- function(data,
                     log_var
 ){
 
-  # transform D to log odds and then add below instead of cor
-  log_odds <- log((D * R - D)/(D * R - 1))
+  # take to log of D and deal with invalid values
+  log_odds <- log(D)
   log_odds <- ifelse(is.infinite(log_odds)| is.nan(log_odds), 0, log_odds)
 
-  # new version
   if (R != 1) {
     data$error_hat <- exp(log(R / (1 - R)) +
                             log_odds * data[[focal_variable]]) /

@@ -22,9 +22,11 @@ rcme_sim_ind <- function(data,
                     log_var){
 
 
-
-  log_odds <- log((D * R - D)/(D * R - 1))
-  log_odds <- ifelse(is.infinite(log_odds) | is.nan(log_odds), 0, log_odds)
+  # take to log of D and deal with invalid values
+  log_odds <- log(D)
+  log_odds <- ifelse(is.infinite(log_odds) | is.nan(log_odds),
+                     0,
+                     log_odds)
 
   if (R != 1) {
     data$error_hat <- exp(log(R / (1 - R)) +
