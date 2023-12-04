@@ -40,7 +40,7 @@ rcme_ind(
   D = 0.9) 
 #> $sim_result
 #>          focal_variable    SE    rr
-#> Estimate          0.365 0.029 0.928
+#> Estimate           0.34 0.034 0.928
 #> 
 #> $naive
 #> 
@@ -75,21 +75,21 @@ rcme_ind(
 #> The crime variable will be logged to reflect the multiplicative error structure. If you wish to report the sensitivity results in the original crime metric they will need to be transformed. For a full discussion of the multiplicative error structure of crime see Pina-Sanchez et al., 2022.
 #> $sim_result
 #>      R    D log_var    rr focal_variable    SE
-#> 1  0.3 0.90    TRUE 0.928          0.892 0.136
-#> 2  0.6 0.90    TRUE 0.957          0.871 0.137
-#> 3  0.9 0.90    TRUE 0.989          0.819 0.139
-#> 4  0.3 0.95    TRUE 0.964          0.669 0.147
-#> 5  0.6 0.95    TRUE 0.979          0.661 0.147
-#> 6  0.9 0.95    TRUE 0.995          0.634 0.149
+#> 1  0.3 0.90    TRUE 0.928          0.774 0.142
+#> 2  0.6 0.90    TRUE 0.957          0.626 0.149
+#> 3  0.9 0.90    TRUE 0.989          0.458 0.154
+#> 4  0.3 0.95    TRUE 0.964          0.595 0.150
+#> 5  0.6 0.95    TRUE 0.979          0.513 0.153
+#> 6  0.9 0.95    TRUE 0.995          0.428 0.155
 #> 7  0.3 1.00    TRUE 1.000          0.398 0.155
 #> 8  0.6 1.00    TRUE 1.000          0.398 0.155
 #> 9  0.9 1.00    TRUE 1.000          0.398 0.155
-#> 10 0.3 1.05    TRUE 1.034          0.101 0.159
-#> 11 0.6 1.05    TRUE 1.019          0.090 0.159
-#> 12 0.9 1.05    TRUE 1.005         -0.085 0.158
-#> 13 0.3 1.10    TRUE 1.068         -0.199 0.159
-#> 14 0.6 1.10    TRUE 1.038         -0.244 0.158
-#> 15 0.9 1.10    TRUE 1.009         -0.683 0.056
+#> 10 0.3 1.05    TRUE 1.034          0.195 0.159
+#> 11 0.6 1.05    TRUE 1.019          0.283 0.157
+#> 12 0.9 1.05    TRUE 1.005          0.370 0.156
+#> 13 0.3 1.10    TRUE 1.068         -0.008 0.160
+#> 14 0.6 1.10    TRUE 1.038          0.169 0.159
+#> 15 0.9 1.10    TRUE 1.009          0.342 0.157
 #> 
 #> $naive
 #> 

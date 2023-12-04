@@ -4,7 +4,7 @@
 \alias{rcme_sim_plot}
 \title{Title}
 \usage{
-rcme_sim_plot(rcme_sim_range_object, ci = TRUE, naive = TRUE)
+rcme_sim_plot(rcme_sim_range_object, ci = TRUE, naive = TRUE, rr = FALSE)
 }
 \arguments{
 \item{rcme_sim_range_object}{Object saved by \code{rcme_ind()} or \code{rcme_out()} with multiple values.}
@@ -12,6 +12,8 @@ rcme_sim_plot(rcme_sim_range_object, ci = TRUE, naive = TRUE)
 \item{ci}{include confidence interval in the graph}
 
 \item{naive}{include naive estimate in the graph}
+
+\item{rr}{show error on relative risk scale}
 }
 \description{
 Title

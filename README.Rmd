@@ -78,7 +78,7 @@ You can also visualize the results of the simulations easily using `rcme_sim_plo
 rcme_sim_plot(rcme_out_ex, ci = T, naive = T, rr = F)
 ```
 
-The result of this function is just a normal `ggplot2` object which can be changed and saved accordingly:
+The result of this function is just a normal `ggplot2` object which can be changed and saved accordingly: 
 
 ```{r}
 rcme_sim_plot(rcme_out_ex, ci = T, naive = T) +
