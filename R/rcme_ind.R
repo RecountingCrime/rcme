@@ -51,11 +51,11 @@ rcme_ind <- function(formula,
   if (is.logical(log_var) == FALSE) {
     stop("`log_var` must be logical type")
   }
-  if (length(log_var) == 1) {
-    if (log_var == TRUE) {
-      warning("You have specified log_var = TRUE.\nThe crime variable will be logged to reflect the multiplicative error structure. If you wish to report the sensitivity results in the original crime metric they will need to be transformed. For a full discussion of the multiplicative error structure of crime see Pina-Sanchez et al., 2022.")
-    }
-  }
+  # if (length(log_var) == 1) {
+  #   if (log_var == TRUE) {
+  #     warning("You have specified log_var = TRUE.\nThe crime variable will be logged to reflect the multiplicative error structure. If you wish to report the sensitivity results in the original crime metric they will need to be transformed. For a full discussion of the multiplicative error structure of crime see Pina-Sanchez et al., 2022.")
+  #   }
+  # }
   # if (length(D) == 1) {
   #   if (D == 0) {
   #     warning("The correlation between measurement error in crime data and the key variable of interest is set to 0. Non-differentiality is assumed.")
