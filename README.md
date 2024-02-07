@@ -32,6 +32,8 @@ with a recording rate (`R`) of 0.3, and an association between the focal
 variable and the recording rate (`D`) of 0.9 odds ratios.
 
 ``` r
+library(rcme)
+
 rcme_ind(
   formula = "disorder ~ log_violent_crime + white_british + unemployment + median_age",
   data = crime_disorder,
@@ -71,8 +73,6 @@ rcme_ind(
   R = c(0.3, 0.6, 0.9),
   D = c(0.9, 0.95, 1, 1.05, 1.1),
   log_var = T) 
-#> Warning in rcme_ind(formula = "disorder ~ violent_crime + white_british + unemployment + median_age", : You have specified log_var = TRUE.
-#> The crime variable will be logged to reflect the multiplicative error structure. If you wish to report the sensitivity results in the original crime metric they will need to be transformed. For a full discussion of the multiplicative error structure of crime see Pina-Sanchez et al., 2022.
 #> $sim_result
 #>      R    D log_var    rr focal_variable    SE
 #> 1  0.3 0.90    TRUE 0.928          0.774 0.142
